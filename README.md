@@ -13,14 +13,19 @@ Our Framework offers automated surface analysis functionality that works on ever
 
 On sample databases of high entropy alloys for the CO2RR and OER,<strong> our framework had similar or improved accuracy with a 900% reduction in computational cost</strong>  as seen below.
 
+
+
 | OCP Memory Used | AGRA Memory Used | 
 |:---------------:|:---------------:|
-| 410 MB  | 45 MB   | Row 1, Cell 3   |
+| 410 MB  | 45 MB   | 
 | 410 kB/datapoint   | 45 kB/datapoint   | 
  
 <div style="text-align: center; font-size: 16px; color: #12277a ;">
     <strong>~9 more memory efficient! </strong>
 </div>
 
+<p align="center" width="10%">
+    <img width="70%" src="images/acc.png"> 
+</p>
 
 
