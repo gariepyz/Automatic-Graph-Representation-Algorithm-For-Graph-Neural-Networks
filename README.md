@@ -16,7 +16,7 @@ This repository provides code for a data processing algorithm to extract geometr
 Our Framework offers automated surface analysis functionality that works on every standard adsorption site (samples visualized below). The framework then extracts the neighbors based on the adsorption site type and generates edges in a bottum up, directed approach that differs from proximity cutoff methods.
 
 <p align="center" width="75%">
-    <img width="75%" src="images/samples.png"> 
+    <img width="75%" src="images/samples-nobg.png"> 
 </p>
 
 On sample databases of high entropy alloys for the CO2RR and OER,<strong> our framework had a 900% reduction in computational cost</strong>  without sacrificing accuracy as seen below.
