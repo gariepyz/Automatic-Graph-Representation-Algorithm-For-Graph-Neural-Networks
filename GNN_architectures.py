@@ -98,12 +98,7 @@ class CGCNN_Model(torch.nn.Module):
         #  Embedding edges features
 
         self.embedding_edges = torch.nn.Linear(dim_edge_attr, edges_embedding_size)
-
-
-
-
         self.embedding_fc = torch.nn.Linear(dim_node_attr, atom_embedding_size)
-
         self.convs = nn.ModuleList(
             [
                 CGCNNConv(
@@ -125,24 +120,18 @@ class CGCNN_Model(torch.nn.Module):
                 layers.append(nn.Softplus())
             self.fcs = nn.Sequential(*layers)
         self.fc_out = nn.Linear(fc_feat_size, 1)
-
-
+        
+    #Forward pass through the network
     def _forward(self, data):
-
-        # Forward pass through the network
         mol_feats = self._convolve(data)
         mol_feats = self.conv_to_fc(mol_feats)
         if hasattr(self, "fcs"):
             mol_feats = self.fcs(mol_feats)
-
         out = self.fc_out(mol_feats)
         return  out.view(-1)
 
     def forward(self, data):
-
         return self._forward(data)
-
-
 
     def _convolve(self, data):
         """
@@ -150,9 +139,6 @@ class CGCNN_Model(torch.nn.Module):
         into the dense layers.
         """
         node_feats = self.embedding_nodes(data.x)
-
-#         edge_attr = self.embedding_edges(data.edge_attr)
-
         edge_attr = data.edge_attr
 
         for f in self.convs:
@@ -178,14 +164,11 @@ class CGCNNConv(MessagePassing):
         )
         self.bn1 = nn.BatchNorm1d(2 * self.node_feat_size)
         self.ln1 = nn.LayerNorm(self.node_feat_size)
-
         self.reset_parameters()
 
     def reset_parameters(self):
         torch.nn.init.xavier_uniform_(self.lin1.weight)
-
         self.lin1.bias.data.fill_(0)
-
         self.bn1.reset_parameters()
         self.ln1.reset_parameters()
 
@@ -267,10 +250,6 @@ class Model_Handler():
         sns.lineplot(x=np.linspace(np.amin(actual), np.amax(actual), 100),
                  y=np.linspace(np.amin(actual), np.amax(actual), 100), color='red')
 
-
-
-
-
         at = AnchoredText(
             '{:<8s} = {:.3f} eV \n {:<8s} = {:.3f} eV'.format('RMSD', RMSD, 'MAE', MAE), prop=dict(size=12), frameon=True, loc='upper left')
         at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
@@ -301,10 +280,10 @@ class Model_Handler():
             optimizer.zero_grad()
             loss = F.mse_loss(model(data), target_normed)
             loss.backward()
-    #         loss_all += loss.item() * data.num_graphs
             losses.update(loss.data.cpu(), data.y.size(0))
             optimizer.step()
         return losses.avg.item()
+    
     #Evaluate predictions on loader
     def _test(self,model, loader, normalizer, device='cpu', test=False):
         '''
@@ -328,7 +307,6 @@ class Model_Handler():
 
             pred_denormed = normalizer.denorm(pred.data.cpu())
             mae_error = mae(pred_denormed, data.y)
-
             mae_errors.update(mae_error, data.y.size(0))
             test_preds.extend(pred_denormed.tolist())
             test_targets.extend(data.y.tolist())
@@ -340,7 +318,6 @@ class Model_Handler():
                 test_adsorbate.extend(data.adsorbate)
             except:
                 test_adsorbate.extend(data.adsorbate)
-
         if test:
             my_dict = {"idx": test_idx,
                    "adsorbate": test_adsorbate,
@@ -362,10 +339,10 @@ class Model_Handler():
         path = os.path.join(checkpoint_dir, f"{self.config['model']}_checkpoint")
         torch.save(state, path)
         if is_best:
-    #         bestfile = datetime.now().strftime('Best_NNConv_%d-%m-%y-%H:%m.pth.tar')
             bestfile = f"{self.config['model']}_best_model"
             shutil.copyfile(path, os.path.join(checkpoint_dir,bestfile))
             return bestfile 
+        
     #Training
     def train_function(self, train_dataset, val_dataset,normalizer, device = "cpu", checkpoint_dir=None):
         '''
@@ -377,7 +354,6 @@ class Model_Handler():
         '''
         best_model = None
         best_val_error = 10e15
-
 
         epoch_history =[]
         val_error_history =[]
@@ -408,10 +384,7 @@ class Model_Handler():
                          processing_steps=self.config["processing_steps"],
                           num_layers=self.config["num_layers"],
                          num_iter=self.config["num_iter"])            
-
-
         net.to(device)
-
 
         optimizer = torch.optim.Adam(net.parameters(), lr=self.config["lr"])
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
@@ -420,14 +393,10 @@ class Model_Handler():
         #Commence training loop
         for epoch in range(self.config['Nepoch']):  
             lr = scheduler.optimizer.param_groups[0]['lr']
-
             loss = self._train(net, train_loader, epoch, normalizer, optimizer, device=device)
             val_error = self._test(net, val_loader, normalizer)
-
             scheduler.step(val_error)
-
             is_best = val_error < best_val_error
-
             best_val_error = min(val_error , best_val_error)
             if self.config['model']=='cgcnn':
                 model_state = {
@@ -463,7 +432,6 @@ class Model_Handler():
                 }
 
             self.save_checkpoint(model_state, is_best, f"{self.config['model']}_checkpoint", checkpoint_dir)
-
             epoch_history.append(epoch)
             val_error_history.append(val_error)
             loss_history.append(loss)
@@ -478,14 +446,12 @@ class Model_Handler():
                        "loss":loss_history ,
                        "val_error":val_error_history}
 
-        df = pd.DataFrame(my_dict)
-        
+        df = pd.DataFrame(my_dict)    
         if self.config['model'] == 'cgcnn':
             df.to_csv(f"{checkpoint_dir}/{self.config['model']}_{self.config['emb']}_train_history_{self.a}_{self.s}_{self.l}_{self.h}_{self.b}.csv", index=False)
         
         if self.config['model'] == 'nnconv':
             df.to_csv(f"{checkpoint_dir}/{self.config['model']}_{self.config['emb']}_train_history_{self.n}_{self.e}_{self.a}_{self.s}_{self.l}_{self.m}.csv", index=False)            
-
         return best_model
     
     #Test best model:
@@ -502,11 +468,9 @@ class Model_Handler():
         save_df (bool): self explanatory
         '''
 
-
         if testfile is not None:
             with open(testfile, 'rb') as handle:
                     test_dataset= pickle.load(handle)
-
 
         #Extract attributes from best model
         if self.config['emb'] != 'cgcnn92':
@@ -525,17 +489,13 @@ class Model_Handler():
         sample_target = torch.vstack([ data.y for data in test_dataset])
         normalizer = Normalizer(sample_target)
 
-
         if best_model:
             model=best_model
 
         else:
 
             best_checkpoint_path = os.path.join(checkpoint_dir, f"{self.config['model']}_best_model")
-
             model = torch.load(best_checkpoint_path)
-
-
 
         #Create best model parameters from extract attributes
         if self.config['model']=='cgcnn':
@@ -557,12 +517,9 @@ class Model_Handler():
                                          num_layers=model["num_layers"],
                                         num_iter=model["num_iter"])
 
-
         best_trained_model.to(device)
         normalizer.load_state_dict(model['normalizer'])
         best_trained_model.load_state_dict(model['state_dict'])
-
-
 
         test_error, test_df  = self._test(best_trained_model, test_loader, normalizer,device=device,test=True)
         #save results
@@ -570,8 +527,7 @@ class Model_Handler():
             if self.config['model']=='cgcnn':
                 test_df.to_csv(f"{self.campaign_name}/{self.config['model']}_{self.campaign_name}_{self.config['emb']}_{self.a}_{self.s}_{self.l}_{self.h}_{self.b}.csv", index=False)
             if self.config['model'] == 'nnconv':
-                test_df.to_csv(f'{self.campaign_name}/results_{self.campaign_name}_{self.n}_{self.e}_{self.a}_{self.s}_{self.l}_{self.m}.csv', index=False)
-            
+                test_df.to_csv(f'{self.campaign_name}/results_{self.campaign_name}_{self.n}_{self.e}_{self.a}_{self.s}_{self.l}_{self.m}.csv', index=False)      
         return  test_error, test_df    
 
     #Graph functions:
@@ -647,7 +603,6 @@ class Model_Handler():
         train_dataset += test_dataset
         print('train_sampler len:', len(train_dataset))
         print('val_sampler len:', len(val_dataset))
-
 
         best_model = self.train_function(train_dataset =train_dataset, val_dataset =val_dataset, normalizer=normalizer,checkpoint_dir=self.campaign_name)
 

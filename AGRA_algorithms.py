@@ -170,10 +170,8 @@ class ASE_To_Graph():
     def node_symbol(self,atom):
         return "".format(atom.symbol)
 
-
     def add_atoms_node(self,graph, atoms, a1):
         graph.add_node(self.node_symbol(atoms[a1]), index=a1)
-
 
     def add_atoms_edge(self,graph, atoms, a1, a2):
         EN = self.get_EN(atoms, a1, a2)
@@ -253,7 +251,6 @@ class ASE_To_Graph():
                 "adsorbate_atoms":adsorbate_atoms,
                 "bonds":bonds}
 
-
         adsorbate_atms = [atom.index for atom in surf_n if atom.symbol in adsorbate]
 
         #Generate Graph
@@ -265,7 +262,6 @@ class ASE_To_Graph():
 
         numbers = surf_n.get_atomic_numbers().tolist()
         symbols = surf_n.get_chemical_symbols()
-
 
         for i, feat_dict in full.nodes(data=True):
             feat_dict.update({'symbol':  symbols[i]})
@@ -361,8 +357,7 @@ class ASE_To_Graph():
             else:
                 results.append(self.get_data( rows[i],atom_features))
 
-        datas = results
-        
+        datas = results      
 
         with open(f"data_{adsorbate}_{emb}.pickle", 'wb') as handle:
             pickle.dump(datas, handle)
@@ -392,8 +387,6 @@ class ASE_To_Graph():
 
         ocp_slab = ocp_a2g.convert(slab_sample_visual)
         ocp_graph = to_networkx(ocp_slab)
-        #nx.draw_networkx(ocp,with_labels=True)
-        
         
         fig, ax = plt.subplots(2,2,figsize=(8,6),subplot_kw={'aspect': 'equal'})
        
@@ -421,6 +414,7 @@ class ASE_To_Graph():
         
         plt.tight_layout()
         return None
+    
     #split generated graph data into train/test data
     def split_data(self,split=0.1):
         with open(self.pickle_name, 'rb') as handle:
@@ -610,10 +604,4 @@ class OCP_AtomsToGraphs:
             data, slices = collate(data_list)
             torch.save((data, slices), processed_file_path)
 
-        return data_list        
-        
-        
-        
-        
-        
-        
+        return data_list                    
