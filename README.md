@@ -44,7 +44,7 @@ This repository employs 1 notebook, 3 supplementary .py files, sample data/JSON 
 
 <strong>help_functions.py</strong> - basic data transformation functions to clean up the code in GNN_architectures.
 
-<strong>sample dataset folder</strong> - sample pickle files AGRA will generate.
+<strong>sample_dataset folder</strong> - sample pickle files AGRA will generate.
 
 <strong>element folder</strong> - JSON files containing cgcnn92 and megnet 16 feature embeddings.
 
