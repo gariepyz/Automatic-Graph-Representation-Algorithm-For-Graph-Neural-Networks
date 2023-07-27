@@ -1,4 +1,4 @@
-# Automatic-Graph-Representation-Algorithm-AGRA-
+# Automatic-Graph-Representation-Algorithm
 <div style="text-align: left; font-size: 22 px; color: #224CA0 ;">
     <strong> Summary of the Framework: </strong>
 </div>
