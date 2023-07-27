@@ -9,6 +9,10 @@ This repository provides code for a data processing algorithm to extract geometr
     <img width="75%" src="images/abstract.png"> 
 </p>
 
+<p align="center" width="75%">
+    <img width="75%" src="images/abstract-nobg.png"> 
+</p>
+
 <div style="text-align: left; font-size: 22 px; color: #224CA0 ;">
     <strong> Advancements in Technology: </strong>
 </div>
