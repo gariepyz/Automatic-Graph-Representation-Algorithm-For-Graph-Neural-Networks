@@ -29,7 +29,7 @@ On sample databases of high entropy alloys for the CO2RR and OER,<strong> our fr
 On a combination of datasets, the AGRA also outperformed OCP on 3 common GNNs:
 
 <p align="center" width="10%">
-    <img width="70%" src="images/acc.png"> 
+    <img width="70%" src="images/acc-nobg.png"> 
 </p>
 
 <div style="text-align: left; font-size: 22 px; color: #224CA0 ;">
