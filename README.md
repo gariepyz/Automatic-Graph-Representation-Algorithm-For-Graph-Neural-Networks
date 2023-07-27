@@ -36,7 +36,7 @@ On a combination of datasets, the AGRA also outperformed OCP on 3 common GNNs:
     <strong> File Structures and Layout: </strong>
 </div>
 
-This notebook repository employs 1 notebook, 3 supplementary .py files and sample data/JSON files for feature engineering:
+This repository employs 1 notebook, 3 supplementary .py files and sample data/JSON files for feature engineering:
 
 <strong>AGRA_algorithms.py </strong> - contains our (AGRA) ASE_To_Graph class, the open catalyst project (OCP) Atom_To_Graph class (solely for comparison), and extra functions to handle imported databases and data operations. 
 
