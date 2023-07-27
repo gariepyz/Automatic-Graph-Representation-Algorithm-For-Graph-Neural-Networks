@@ -36,7 +36,7 @@ On a combination of datasets, the AGRA also outperformed OCP on 3 common GNNs:
     <strong> File Structures and Layout: </strong>
 </div>
 
-This repository employs 1 notebook, 3 supplementary .py files and sample data/JSON files for feature engineering:
+This repository employs 1 notebook, 3 supplementary .py files, sample data/JSON files for feature engineering and a conda yml file for a functioning environment:
 
 <strong>AGRA_algorithms.py </strong> - contains our (AGRA) ASE_To_Graph class, the open catalyst project (OCP) Atom_To_Graph class (solely for comparison), and extra functions to handle imported databases and data operations. 
 
@@ -47,5 +47,7 @@ This repository employs 1 notebook, 3 supplementary .py files and sample data/JS
 <strong>sample dataset folder</strong> - sample pickle files AGRA will generate.
 
 <strong>element folder</strong> - JSON files containing cgcnn92 and megnet 16 feature embeddings.
+
+<strong>AGRA_env.yml</strong> - If you're using conda, this file can be used to setup a functioning environment.
 
 We chose to modularize the code this way so that researchers and programmers do not need to search a 1500+ line .py file for specifics.
