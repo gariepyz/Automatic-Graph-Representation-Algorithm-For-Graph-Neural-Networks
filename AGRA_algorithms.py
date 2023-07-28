@@ -137,15 +137,19 @@ class GaussianDistance():
 class ASE_To_Graph():
     def __init__(self,db_file,embedding):
         '''
-        db_file (str): filename/path of the ASE db file
-        embedding (str): name of the embedding you want to implement
-        
+        inputs:
+        db_file (str) - filename/path of the ASE db file
+        embedding (str) - name of the embedding you want to implement
         '''
         
         self.db_filename = db_file
         self.embedding = embedding
         
     def import_db(self):
+        '''
+        self explanatory function
+        '''
+        
         with connect(self.db_filename) as db:
             ase_db = db
         self.db = ase_db    
@@ -153,10 +157,18 @@ class ASE_To_Graph():
     
     #Not used in algorithm, just helps with data inspection 
     def bond_symbol(self,atoms, a1, a2):
+        '''
+        self explanatory function
+        '''  
+        
         return "{}{}".format(*sorted((atoms[a1].symbol, atoms[a2].symbol)))
     
     #Get electronegativity (EN)
     def get_EN(self,atoms, a1, a2):
+        '''
+        self explanatory function
+        ''' 
+        
         try:
             avg = (mendeleev.element(atoms[a1].symbol).en_pauling + mendeleev.element(atoms[a2].symbol).en_pauling)/2
         except:
@@ -168,12 +180,24 @@ class ASE_To_Graph():
         return np.array([avg, dif])
 
     def node_symbol(self,atom):
+        '''
+        self explanatory function
+        '''
+        
         return "".format(atom.symbol)
 
     def add_atoms_node(self,graph, atoms, a1):
+        '''
+        self explanatory function
+        ''' 
+        
         graph.add_node(self.node_symbol(atoms[a1]), index=a1)
 
     def add_atoms_edge(self,graph, atoms, a1, a2):
+        '''
+        self explanatory function
+        '''
+        
         EN = self.get_EN(atoms, a1, a2)
         distance = atoms.get_distances(a1,a2)
         graph.add_edge(a1,
@@ -183,6 +207,18 @@ class ASE_To_Graph():
 
     #Main surface analysis automation function
     def analyse_surface(self,atoms, adsorbate,radii_multiplier=1.1, skin = 0.25, **kwargs):
+        '''
+        inputs:
+        atoms (ASE atoms) - atom to analyze
+        adsorbate (str) - adsorbate to analyze
+        radii_multiplier (float) - atomic radius factor
+        skin (float) - skin factor
+        
+        outputs:
+        binding_atoms (list) - binding atom index
+        adsorbate_atoms (list) - adsorbate atom index
+        bonds (list) - connections 
+        '''        
         
         #Extract nearest neighbor indexes 
         nl = NeighborList(natural_cutoffs(atoms, radii_multiplier), self_interaction=False,
@@ -213,11 +249,17 @@ class ASE_To_Graph():
     
     def extract_ads_geom(self, atms, adsorbate, elem_features, plot=False):
         '''
-        atms (ASE Atoms): slab to analyze
-        adsorbate (str): adsorbate to analyze
-        elem_features (str): embedding features initialized with the class
-        plot (bool): plot the exactracted structure
+        inputs:
+        atms (ASE Atoms) - slab to analyze
+        adsorbate (str) - adsorbate to analyze
+        elem_features (str) - embedding features initialized with the class
+        plot (bool) - plot the exactracted structure
+        
+        outputs:
+        surf_n (ASE atoms) - extracted surface
+        full (nx graph) - resulting graph
         '''
+        
         #Extract neighbors
         binding_atoms, adsorbate_atoms, bonds = self.analyse_surface(atms, adsorbate=adsorbate)
         nl = NeighborList(natural_cutoffs(atms, 1.1), self_interaction=False,
@@ -254,9 +296,7 @@ class ASE_To_Graph():
         adsorbate_atms = [atom.index for atom in surf_n if atom.symbol in adsorbate]
 
         #Generate Graph
-
         full = nx.Graph()
-
         full.add_nodes_from(range(len(surf_n)))
         distances = surf_n.get_all_distances(mic=True)
 
@@ -285,10 +325,12 @@ class ASE_To_Graph():
     #convert a ASE atoms object from an ASE db into a graph   
     def get_data(self,row, atom_features,map_warning=False):
         '''
-        row (ASE rows): row to convert into a torch graph
-        atom_features (str): embedding features 
-        map_warning (bool): print warnings about failed mappings
+        inputs:
+        row (ASE rows) - row to convert into a torch graph
+        atom_features (str) - embedding features 
+        map_warning (bool) - print warnings about failed mappings
         '''
+        
         gdf = GaussianDistance()
         adsorbate=row.Adsorbate
         atm = row.toatoms()
@@ -332,10 +374,11 @@ class ASE_To_Graph():
         
     def get_data_from_asedb(self, db,  adsorbate, emb="cgcnn92", ncpus=1):
         '''
-        db (ASE db): db to fully extract
-        adsorbate (str): adsorbate to analyze/extract
-        emb (str): embedding features
-        ncpus (int): core cpus 
+        inputs:
+        db (ASE db) - db to fully extract
+        adsorbate (str) - adsorbate to analyze/extract
+        emb (str) - embedding features
+        ncpus (int) - core cpus 
         '''
         
         gdf = GaussianDistance()
@@ -417,6 +460,14 @@ class ASE_To_Graph():
     
     #split generated graph data into train/test data
     def split_data(self,split=0.1):
+        '''
+        inputs:
+        split (float) - train/test split
+        
+        outputs:
+        train/test (np.array) - train test datasets
+        '''
+        
         with open(self.pickle_name, 'rb') as handle:
             dataset= pickle.load(handle)   
             

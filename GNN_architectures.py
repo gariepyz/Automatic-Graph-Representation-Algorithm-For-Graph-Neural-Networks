@@ -60,7 +60,8 @@ class NNConv_Model(torch.nn.Module):
         out = self.lin2(out)
         return out.view(-1)
 
-#CGCNN model architecture  
+#CGCNN model architecture
+#Code taken from (https://arxiv.org/abs/1710.10324)
 class CGCNN_Model(torch.nn.Module):
     """
         Initialize CrystalGraphConvNet.
@@ -232,11 +233,12 @@ class Model_Handler():
     #Plot:
     def plot_train(self,df, name='train_history', title='Parity Plot', x='Target Value', y='Predicted Value', color='b',  hue='adsorbate'):
         '''
-        df (pandas df): training history data
-        title (str): save title
-        x/y (str): axis naming
-        color (str): plotting color
-        hue (str): self explanatory
+        inputs:
+        df (pandas df) - training history data
+        title (str) - save title
+        x/y (str) - axis naming
+        color (str) - plotting color
+        hue (str) - self explanatory
         '''
         sns.set_style("whitegrid", {'axes.grid' : False})
 
@@ -263,12 +265,16 @@ class Model_Handler():
         
     def _train(self,model, loader, epoch,normalizer, optimizer, device='cpu'):
         '''
-        model (torch geometric model): model object
-        loader (torch dataloader): dataloader for train dataset
-        epoch (int): number of epochs
-        normalizer (torch.normalizer object): self explanatory
-        optimizer (torch.optimizer object): self explanatory
-        device (str): cpu or gpu training
+        inputs:
+        model (torch geometric model) - model object
+        loader (torch dataloader) - dataloader for train dataset
+        epoch (int) - number of epochs
+        normalizer (torch.normalizer object) - self explanatory
+        optimizer (torch.optimizer object) - self explanatory
+        device (str) - cpu or gpu training
+        
+        outputs:
+        loss (loss.item()) - training loss
         '''
         model.train()
         loss_all = 0
@@ -287,11 +293,15 @@ class Model_Handler():
     #Evaluate predictions on loader
     def _test(self,model, loader, normalizer, device='cpu', test=False):
         '''
-        model (torch geometric model): model object
-        loader (torch dataloader): dataloader for test dataset
-        normalizer (torch.normalizer object): self explanatory
-        device (str): cpu or gpu training
-        test (bool): add extra detail on testing results
+        inputs:
+        model (torch geometric model) - model object
+        loader (torch dataloader) - dataloader for test dataset
+        normalizer (torch.normalizer object) - self explanatory
+        device (str) - cpu or gpu training
+        test (bool) - add extra detail on testing results
+        
+        outputs:
+        mae (avg.item()) - MAE
         '''
         model.eval()
         error = 0
@@ -331,10 +341,14 @@ class Model_Handler():
     #Save model:
     def save_checkpoint(self,state, is_best, filename, checkpoint_dir='.'):
         '''
+        inputs:
         state (torch object): model state
         is_best (bool): best model or not
         filename (str): save name
         checkpoint_dir (str): directory to save results
+        
+        outputs: 
+        bestfile (file) - extracted best model
         '''
         path = os.path.join(checkpoint_dir, f"{self.config['model']}_checkpoint")
         torch.save(state, path)
@@ -346,11 +360,15 @@ class Model_Handler():
     #Training
     def train_function(self, train_dataset, val_dataset,normalizer, device = "cpu", checkpoint_dir=None):
         '''
-        train_dataset (list): training set
-        val_dataset (list): val set
-        normalizer (torch.normalizer object): self explanatory
-        device (str): cpu or gpu training
-        checkpoint_dir (str): directory to save results
+        inputs:
+        train_dataset (list) - training set
+        val_dataset (list) - val set
+        normalizer (torch.normalizer object) - self explanatory
+        device (str) - cpu or gpu training
+        checkpoint_dir (str) - directory to save results
+        
+        outputs:
+        best_model (torch save) - extracted best model object
         '''
         best_model = None
         best_val_error = 10e15
@@ -459,13 +477,18 @@ class Model_Handler():
                         test_dataset=None, testfile=None, checkpoint_dir=None, best_model=None,
                         batch_size=8, device="cpu",save_df=True):
         '''
-        test_dataset (list): test set
-        testfile (str): test file name
-        checkpoint_dir (str): checkpoint folder path
-        best_model (torch geometric model): self explanatory
-        batch_size (int): self explanatory
-        device (str): cpu or gpu implementation
-        save_df (bool): self explanatory
+        inputs: 
+        test_dataset (list) - test set
+        testfile (str) - test file name
+        checkpoint_dir (str) - checkpoint folder path
+        best_model (torch geometric model) - self explanatory
+        batch_size (int) - self explanatory
+        device (str) - cpu or gpu implementation
+        save_df (bool) - self explanatory
+        
+        outputs:
+        test_error (float) - error
+        test_df (df) - test index
         '''
 
         if testfile is not None:
@@ -533,7 +556,11 @@ class Model_Handler():
     #Graph functions:
     def get_atom_embedding(emb="cgcnn92"):
         '''
-        emb (str): feature embedding
+        inputs:
+        emb (str) - feature embedding
+        
+        outputs:
+        atom_features (dictionnary) - dictionnary of node embeddings
         '''
         
         elem_emb = join(os.path.dirname(os.path.realpath("__file__")), f"element/{emb}.json")
@@ -544,7 +571,11 @@ class Model_Handler():
     #Update edge of generate graph with gaussian distance embedding
     def update_edges(dataset):
         '''
-        dataset (list): dataset to update edges for
+        inputs:
+        dataset (list) - dataset to update edges for
+        
+        outputs:
+        data (list) - updated dataset
         '''
         for idata, data in enumerate(dataset):
             #dataset[idata].edge_attr = torch.stack([1/data.distance[:,0],1/data.EN[:,0]], dim=1).to(torch.float)
@@ -553,6 +584,17 @@ class Model_Handler():
    
     #Main function:
     def main(self, datafile, data_size=None, train_ratio=None, val_ratio=0.1, test_ratio=0.1):
+        '''
+        inputs:
+        datafile (str) - file path
+        data_size (float) - data split if any
+        train/val/test_ratio (float) - train split
+        
+        outputs:
+        best_model (torch geometric object) - best GNN model parameters
+        test_dataset (list) - test_dataset used
+        '''
+        
         #prep directory to save results and prep data for testing
         try:
             Path(self.campaign_name).mkdir(parents=True, exist_ok=False)
@@ -609,6 +651,10 @@ class Model_Handler():
         return best_model, test_dataset
     
     def get_train_history(self,):
+        '''
+        outputs:
+        train_history (df) - training history
+        '''
         #read in saved results and plot them
         if self.config['model'] =='cgcnn':
             train_hist = pd.read_csv(f"{self.campaign_name}/{self.config['model']}_{self.config['emb']}_train_history_{self.a}_{self.s}_{self.l}_{self.h}_{self.b}.csv")
