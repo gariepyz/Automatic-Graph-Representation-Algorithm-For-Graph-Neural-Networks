@@ -43,7 +43,7 @@ On sample databases of high entropy alloys for the CO<sub>2</sub>RR and OER,<str
 Accuracy and extrapolation
 --------------------------
 
-On a combination of datasets, the AGRA also outperformed OCP on 3 common GNNs:
+On a combination of datasets, the AGRA also outperformed OCP on common GNNs:
 
 <p align="center" width="10%">
     <img width="40%" src="images/acc-nobg.png"> 
