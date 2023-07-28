@@ -76,6 +76,11 @@ Package dependencies
 - Pandas
 - Matplotlib
 - Seaborn
-- TensorFlow/Keras
 - Atomic Simulation Environment (ASE)
 - Sklearn
+- NetworkX
+- Mendeleev
+- PyTorch
+- PyTorch Geometric
+- Pymatgen
+- SciPy
