@@ -33,7 +33,7 @@ Performance improvements
 ========================
 Memory efficiency
 -----------------
-On sample databases of high entropy alloys for the CO2RR and OER,<strong> our framework had a 900% reduction in computational cost</strong>  without sacrificing accuracy as seen below.
+On sample databases of high entropy alloys for the CO<sub>2</sub>RR and OER,<strong> our framework had a 900% reduction in computational cost</strong>  without sacrificing accuracy as seen below.
 
 | OCP Memory Used | AGRA Memory Used | 
 |:---------------:|:---------------:|
